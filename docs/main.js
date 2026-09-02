@@ -3,23 +3,70 @@
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Mobile Menu Toggle
+  // 1. Responsive Mobile Menu Toggle with Backdrop & Accessibility
   const mobileToggle = document.querySelector('.mobile-toggle');
   const navMenu = document.querySelector('.nav-menu');
+  const menuBackdrop = document.querySelector('.menu-backdrop');
+
+  const closeMenu = () => {
+    if (navMenu && navMenu.classList.contains('open')) {
+      navMenu.classList.remove('open');
+      if (menuBackdrop) menuBackdrop.classList.remove('open');
+      if (mobileToggle) {
+        mobileToggle.innerHTML = '☰';
+        mobileToggle.setAttribute('aria-expanded', 'false');
+      }
+      document.body.style.overflow = '';
+    }
+  };
+
+  const openMenu = () => {
+    if (navMenu) {
+      navMenu.classList.add('open');
+      if (menuBackdrop) menuBackdrop.classList.add('open');
+      if (mobileToggle) {
+        mobileToggle.innerHTML = '✕';
+        mobileToggle.setAttribute('aria-expanded', 'true');
+      }
+      document.body.style.overflow = 'hidden';
+    }
+  };
 
   if (mobileToggle && navMenu) {
-    mobileToggle.addEventListener('click', () => {
-      navMenu.classList.toggle('open');
+    mobileToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isOpen = navMenu.classList.contains('open');
-      mobileToggle.innerHTML = isOpen ? '✕' : '☰';
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     });
 
-    // Close menu when clicking a link
+    if (menuBackdrop) {
+      menuBackdrop.addEventListener('click', closeMenu);
+    }
+
+    // Close on any menu link click
     navMenu.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        navMenu.classList.remove('open');
-        mobileToggle.innerHTML = '☰';
-      });
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !mobileToggle.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Auto-close on resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) closeMenu();
     });
   }
 
