@@ -83,18 +83,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Trigger when in viewport
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !animated) {
-        animated = true;
-        countUp();
-      }
-    });
-  }, { threshold: 0.5 });
+  // 5. Dynamic Web Link Loader (reads link.txt in real time)
+  const applyWebLinks = (url) => {
+    if (!url) return;
+    const cleanUrl = url.trim();
+    if (!cleanUrl) return;
 
-  const metricsSection = document.querySelector('.metrics-section');
-  if (metricsSection) {
-    observer.observe(metricsSection);
-  }
+    // Update all elements with data-web-link or class web-link
+    const webLinks = document.querySelectorAll('[data-web-link], a.web-link');
+    webLinks.forEach(link => {
+      link.href = cleanUrl;
+    });
+
+    // Update any live domain text displays
+    const domainDisplays = document.querySelectorAll('[data-web-domain]');
+    domainDisplays.forEach(el => {
+      el.textContent = cleanUrl.replace(/^https?:\/\//i, '').replace(/\/$/, '');
+    });
+  };
+
+  // Fetch link.txt with no-cache so changes are live immediately
+  fetch('link.txt', { cache: 'no-cache' })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to fetch link.txt: ' + response.status);
+      return response.text();
+    })
+    .then(urlText => {
+      applyWebLinks(urlText);
+    })
+    .catch(err => {
+      console.warn('Could not read link.txt, using fallback links:', err);
+    });
 });
