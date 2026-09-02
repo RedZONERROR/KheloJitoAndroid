@@ -44,14 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "khelojito_config";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_SERVER_URL = "https://khelojito.top/";
+    private static final String DEFAULT_SERVER_URL = "https://khelojito.com/";
 
-    // Remote dynamic server endpoints
-    private static final String GITHUB_PAGES_LINK_TXT = "https://redzonerror.github.io/KheloJitoAndroid/link.txt";
-    private static final String GITHUB_LINK_TXT_MAIN = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/main/docs/link.txt";
-    private static final String GITHUB_LINK_TXT_MASTER = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/master/docs/link.txt";
-    private static final String GITHUB_README_MAIN = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/main/README.md";
-    private static final String GITHUB_README_MASTER = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/master/README.md";
+    // Remote live server link endpoint
+    private static final String REMOTE_LINK_URL = "https://redzonerror.github.io/KheloJitoAndroid/link.txt";
 
     private String currentServerUrl;
     private String currentDomain;
@@ -95,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         setupWebView();
 
         loadGameUrl();
-        syncServerUrlFromGitHub();
+        syncServerUrlFromRemote();
     }
 
     private void initViews() {
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             offlineLayout.setVisibility(View.GONE);
             loadingLayout.setVisibility(View.VISIBLE);
             webView.setVisibility(View.VISIBLE);
-            syncServerUrlFromGitHub();
+            syncServerUrlFromRemote();
             loadGameUrl();
         });
     }
@@ -221,9 +217,9 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl(currentServerUrl);
     }
 
-    private void syncServerUrlFromGitHub() {
+    private void syncServerUrlFromRemote() {
         new Thread(() -> {
-            String extractedUrl = fetchUrlFromGitHub();
+            String extractedUrl = fetchUrlFromRemote();
             if (extractedUrl != null && !extractedUrl.isEmpty()) {
                 boolean isDifferent = !extractedUrl.equalsIgnoreCase(currentServerUrl);
                 currentServerUrl = extractedUrl;
@@ -241,33 +237,21 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private String fetchUrlFromGitHub() {
-        // Priority 1: Check GitHub Pages CDN endpoint
-        String pagesLink = downloadUrl(GITHUB_PAGES_LINK_TXT);
-        if (pagesLink != null && !pagesLink.trim().isEmpty()) {
-            String parsed = parseServerUrlFromMarkdown(pagesLink);
-            if (parsed != null) return parsed;
-        }
-
-        // Priority 2: Check raw GitHub docs/link.txt
-        String linkTxt = downloadUrl(GITHUB_LINK_TXT_MAIN);
-        if (linkTxt == null || linkTxt.trim().isEmpty()) {
-            linkTxt = downloadUrl(GITHUB_LINK_TXT_MASTER);
-        }
-        if (linkTxt != null && !linkTxt.trim().isEmpty()) {
-            String parsed = parseServerUrlFromMarkdown(linkTxt);
-            if (parsed != null) return parsed;
-        }
-
-        // Priority 3: Check README.md
-        String content = downloadUrl(GITHUB_README_MAIN);
-        if (content == null || content.trim().isEmpty()) {
-            content = downloadUrl(GITHUB_README_MASTER);
-        }
+    private String fetchUrlFromRemote() {
+        String content = downloadUrl(REMOTE_LINK_URL);
         if (content == null || content.trim().isEmpty()) {
             return null;
         }
-        return parseServerUrlFromMarkdown(content);
+
+        String clean = content.trim();
+        // Check if raw URL (takes first line if multiple)
+        if (clean.startsWith("http://") || clean.startsWith("https://")) {
+            String firstLine = clean.split("[\\r\\n]+")[0].trim();
+            if (isValidCandidateUrl(firstLine)) {
+                return sanitizeUrl(firstLine);
+            }
+        }
+        return parseServerUrlFromMarkdown(clean);
     }
 
     private String downloadUrl(String urlString) {
@@ -328,8 +312,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isValidCandidateUrl(String candidate) {
         if (candidate == null) return false;
         String lower = candidate.toLowerCase();
-        // Ignore GitHub's own URLs
-        if (lower.contains("github.com") || lower.contains("githubusercontent.com")) {
+        // Ignore GitHub domain itself
+        if (lower.contains("github.com") || lower.contains("githubusercontent.com") || lower.contains("github.io")) {
             return false;
         }
         return lower.startsWith("http://") || lower.startsWith("https://");
