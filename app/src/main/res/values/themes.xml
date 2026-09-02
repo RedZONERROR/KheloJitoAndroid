@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.KheloJito" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/gold_primary</item>
+        <item name="colorPrimaryVariant">@color/gold_secondary</item>
+        <item name="colorOnPrimary">@color/dark_bg</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorSecondaryVariant">@color/accent_purple</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Fullscreen styling & Status bar / Navigation bar color -->
+        <item name="android:statusBarColor">@color/dark_bg</item>
+        <item name="android:navigationBarColor">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
+    </style>
+</resources>

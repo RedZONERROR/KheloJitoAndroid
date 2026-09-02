@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_bg"
+    android:fitsSystemWindows="false">
+
+    <!-- Primary High-Performance Game WebView -->
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dark_bg" />
+
+    <!-- Container for HTML5 Fullscreen (e.g. Teen Patti Fullscreen mode) -->
+    <FrameLayout
+        android:id="@+id/customViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dark_bg"
+        android:visibility="gone" />
+
+    <!-- Sleek Top Progress Indicator -->
+    <ProgressBar
+        android:id="@+id/progressBarHorizontal"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="top"
+        android:max="100"
+        android:progressTint="@color/gold_primary"
+        android:visibility="gone" />
+
+    <!-- Startup Loading Screen matching KheloJito Theme -->
+    <LinearLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/loadingLogo"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/app_name"
+            android:textColor="@color/gold_primary"
+            android:textSize="22sp" />
+
+        <ProgressBar
+            android:id="@+id/loadingSpinner"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="20dp"
+            android:indeterminateTint="@color/gold_primary" />
+    </LinearLayout>
+
+    <!-- Custom Reconnect / Offline Layout -->
+    <LinearLayout
+        android:id="@+id/offlineLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:background="@drawable/offline_card_bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="Offline"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Connection Lost"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Unable to reach KheloJito game servers.\nPlease check your internet connection."
+            android:textColor="@color/slate_text"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/retry_btn_bg"
+            android:fontFamily="sans-serif-medium"
+            android:stateListAnimator="@null"
+            android:text="Retry Connection"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_bg"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</FrameLayout>
