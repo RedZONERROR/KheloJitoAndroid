@@ -1,0 +1,124 @@
+name: Build and Publish Release APK
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+      release_title:
+        description: 'Release Title'
+        required: false
+        default: 'KheloJito Android Release'
+      draft:
+        description: 'Mark as Draft'
+        type: boolean
+        required: false
+        default: false
+      prerelease:
+        description: 'Mark as Pre-release'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build & Publish Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x ./gradlew
+
+      - name: Build Signed Release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Prepare Release Artifacts
+        id: prepare_artifacts
+        run: |
+          # Extract Tag and Title based on event trigger
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            TITLE="${{ github.event.release.name }}"
+            if [ -z "$TITLE" ]; then TITLE="KheloJito Android $TAG"; fi
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${{ github.ref_name }}"
+            TITLE="KheloJito Android $TAG"
+          else
+            TAG="${{ inputs.tag_name }}"
+            TITLE="${{ inputs.release_title }}"
+            if [ -z "$TITLE" ]; then TITLE="KheloJito Android $TAG"; fi
+          fi
+
+          echo "TAG_NAME=$TAG" >> $GITHUB_ENV
+          echo "RELEASE_TITLE=$TITLE" >> $GITHUB_ENV
+
+          # Directory for release outputs
+          RELEASE_DIR="app/build/outputs/apk/release"
+          
+          # Copy to branded APK names
+          cp "$RELEASE_DIR/app-release.apk" "$RELEASE_DIR/KheloJito-$TAG.apk"
+          cp "$RELEASE_DIR/app-release.apk" "$RELEASE_DIR/KheloJito.apk"
+          
+          # Generate SHA-256 Checksums
+          cd "$RELEASE_DIR"
+          sha256sum "KheloJito-$TAG.apk" > checksums.txt
+          sha256sum "KheloJito.apk" >> checksums.txt
+          cd -
+
+          echo "Artifacts prepared successfully for tag: $TAG"
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: ${{ env.RELEASE_TITLE }}
+          body: |
+            ## 🚀 KheloJito Android Official Release
+
+            Official native Android client for **[KheloJito](https://khelojito.top/)**.
+
+            ### ✨ Key Features
+            - **Hardware GPU Acceleration (60+ FPS)**: Ultra-smooth card deals and game animations.
+            - **ProGuard / R8 Obfuscation & Shrinking**: Lightweight, secure bytecode with custom dictionary obfuscation.
+            - **Real-Time Dynamic Server Sync**: Automatically retrieves the live game endpoint from `redzonerror.github.io/KheloJitoAndroid/link.txt`.
+            - **Direct UPI Integration**: One-tap payment intent dispatch for instant deposits and cashouts.
+            - **Instant Sound Effects**: Auto-playing cards, chips, and fanfare.
+
+            ### 📦 Download Assets
+            - **Universal APK**: [`KheloJito.apk`](https://github.com/${{ github.repository }}/releases/download/${{ env.TAG_NAME }}/KheloJito.apk)
+            - **Tagged Version**: `KheloJito-${{ env.TAG_NAME }}.apk`
+            - **Integrity**: Compare the SHA256 checksum in `checksums.txt`.
+          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft || false }}
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
+          files: |
+            app/build/outputs/apk/release/KheloJito.apk
+            app/build/outputs/apk/release/KheloJito-*.apk
+            app/build/outputs/apk/release/checksums.txt
+            app/build/outputs/mapping/release/mapping.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
