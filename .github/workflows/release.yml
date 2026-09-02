@@ -16,6 +16,11 @@ on:
         description: 'Release Title'
         required: false
         default: 'KheloJito Android Release'
+      mark_as_release:
+        description: 'Mark as Official Release (Latest Production)'
+        type: boolean
+        required: false
+        default: true
       draft:
         description: 'Mark as Draft'
         type: boolean
@@ -97,6 +102,10 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           name: ${{ env.RELEASE_TITLE }}
+          make_latest: ${{ (github.event_name != 'workflow_dispatch' || inputs.mark_as_release) && 'true' || 'false' }}
+          draft: ${{ github.event_name == 'workflow_dispatch' && !inputs.mark_as_release && inputs.draft || false }}
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && !inputs.mark_as_release && inputs.prerelease || false }}
+          generate_release_notes: true
           body: |
             ## 🚀 KheloJito Android Official Release
 
@@ -113,8 +122,6 @@ jobs:
             - **Universal APK**: [`KheloJito.apk`](https://github.com/${{ github.repository }}/releases/download/${{ env.TAG_NAME }}/KheloJito.apk)
             - **Tagged Version**: `KheloJito-${{ env.TAG_NAME }}.apk`
             - **Integrity**: Compare the SHA256 checksum in `checksums.txt`.
-          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft || false }}
-          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
           files: |
             app/build/outputs/apk/release/KheloJito.apk
             app/build/outputs/apk/release/KheloJito-*.apk
