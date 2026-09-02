@@ -1,21 +1,60 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ==============================================================================
+# ProGuard / R8 Rules for KheloJito Android Application
+# ==============================================================================
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Obfuscation Dictionaries
+-obfuscationdictionary proguard-dictionary.txt
+-classobfuscationdictionary proguard-dictionary.txt
+-packageobfuscationdictionary proguard-dictionary.txt
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve line numbers and source file for crash debugging
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Preserve Annotations & JavaScript Interfaces
+-keepattributes *Annotation*
+-keepattributes JavascriptInterface
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
+-keepattributes Signature
+-keepattributes Exceptions
+
+# Keep KheloJito Main Entry Point
+-keep class com.app.khelojito.MainActivity {
+    *;
+}
+
+# Keep Android WebView & JavaScript Interface Methods
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+-keepclassmembers class * extends android.webkit.WebChromeClient {
+    *;
+}
+
+-keepclassmembers class * extends android.webkit.WebViewClient {
+    *;
+}
+
+-keepclassmembers class * extends android.webkit.ValueCallback {
+    *;
+}
+
+# Keep Android View Constructors for XML Inflation
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keepclasseswithmembers class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+# Keep AndroidX & Material Components
+-keep class androidx.appcompat.** { *; }
+-keep class com.google.android.material.** { *; }
+-dontwarn androidx.**
+-dontwarn com.google.android.material.**
+
+# Optimization parameters
+-repackageclasses ''
+-allowaccessmodification

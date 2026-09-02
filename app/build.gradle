@@ -20,10 +20,34 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file(project.findProperty('KHELOJITO_KEYSTORE_FILE') ?: 'khelojito.jks')
+            storePassword project.findProperty('KHELOJITO_KEYSTORE_PASSWORD') ?: 'KheloJito@2026'
+            keyAlias project.findProperty('KHELOJITO_KEY_ALIAS') ?: 'khelojito'
+            keyPassword project.findProperty('KHELOJITO_KEY_PASSWORD') ?: 'KheloJito@2026'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        debug {
+            storeFile file(project.findProperty('KHELOJITO_KEYSTORE_FILE') ?: 'khelojito.jks')
+            storePassword project.findProperty('KHELOJITO_KEYSTORE_PASSWORD') ?: 'KheloJito@2026'
+            keyAlias project.findProperty('KHELOJITO_KEY_ALIAS') ?: 'khelojito'
+            keyPassword project.findProperty('KHELOJITO_KEY_PASSWORD') ?: 'KheloJito@2026'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
