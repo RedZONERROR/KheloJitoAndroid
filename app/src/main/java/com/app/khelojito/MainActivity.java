@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_SERVER_URL = "server_url";
     private static final String DEFAULT_SERVER_URL = "https://khelojito.top/";
 
-    // GitHub repository raw endpoints (README and docs/link.txt)
+    // Remote dynamic server endpoints
+    private static final String GITHUB_PAGES_LINK_TXT = "https://redzonerror.github.io/KheloJitoAndroid/link.txt";
     private static final String GITHUB_LINK_TXT_MAIN = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/main/docs/link.txt";
     private static final String GITHUB_LINK_TXT_MASTER = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/master/docs/link.txt";
     private static final String GITHUB_README_MAIN = "https://raw.githubusercontent.com/RedZONERROR/KheloJitoAndroid/main/README.md";
@@ -241,7 +242,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String fetchUrlFromGitHub() {
-        // Priority 1: Check docs/link.txt (dedicated URL file)
+        // Priority 1: Check GitHub Pages CDN endpoint
+        String pagesLink = downloadUrl(GITHUB_PAGES_LINK_TXT);
+        if (pagesLink != null && !pagesLink.trim().isEmpty()) {
+            String parsed = parseServerUrlFromMarkdown(pagesLink);
+            if (parsed != null) return parsed;
+        }
+
+        // Priority 2: Check raw GitHub docs/link.txt
         String linkTxt = downloadUrl(GITHUB_LINK_TXT_MAIN);
         if (linkTxt == null || linkTxt.trim().isEmpty()) {
             linkTxt = downloadUrl(GITHUB_LINK_TXT_MASTER);
@@ -251,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             if (parsed != null) return parsed;
         }
 
-        // Priority 2: Check README.md
+        // Priority 3: Check README.md
         String content = downloadUrl(GITHUB_README_MAIN);
         if (content == null || content.trim().isEmpty()) {
             content = downloadUrl(GITHUB_README_MASTER);
