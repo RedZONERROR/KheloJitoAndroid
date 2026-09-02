@@ -84,10 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // 5. Dynamic Web Link Loader (reads link.txt in real time)
+  let activeWebUrl = '';
+
   const applyWebLinks = (url) => {
     if (!url) return;
     const cleanUrl = url.trim();
     if (!cleanUrl) return;
+    activeWebUrl = cleanUrl;
 
     // Update all elements with data-web-link or class web-link
     const webLinks = document.querySelectorAll('[data-web-link], a.web-link');
@@ -95,12 +98,39 @@ document.addEventListener('DOMContentLoaded', () => {
       link.href = cleanUrl;
     });
 
+    // Update og:url meta tag
+    const ogMeta = document.getElementById('meta-og-url');
+    if (ogMeta) ogMeta.setAttribute('content', cleanUrl);
+
     // Update any live domain text displays
     const domainDisplays = document.querySelectorAll('[data-web-domain]');
     domainDisplays.forEach(el => {
       el.textContent = cleanUrl.replace(/^https?:\/\//i, '').replace(/\/$/, '');
     });
   };
+
+  // Safe click interceptor in case clicked before fetch promise resolves
+  document.addEventListener('click', (e) => {
+    const targetLink = e.target.closest('[data-web-link], a.web-link');
+    if (targetLink) {
+      const currentHref = targetLink.getAttribute('href');
+      if (!currentHref || currentHref === '#') {
+        e.preventDefault();
+        if (activeWebUrl) {
+          window.open(activeWebUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          fetch('link.txt', { cache: 'no-cache' })
+            .then(res => res.text())
+            .then(text => {
+              applyWebLinks(text);
+              if (activeWebUrl) {
+                window.open(activeWebUrl, '_blank', 'noopener,noreferrer');
+              }
+            });
+        }
+      }
+    }
+  });
 
   // Fetch link.txt with no-cache so changes are live immediately
   fetch('link.txt', { cache: 'no-cache' })
@@ -112,6 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
       applyWebLinks(urlText);
     })
     .catch(err => {
-      console.warn('Could not read link.txt, using fallback links:', err);
+      console.warn('Could not read link.txt:', err);
     });
 });
