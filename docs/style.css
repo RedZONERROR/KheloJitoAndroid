@@ -9,9 +9,9 @@
   --bg-card: rgba(15, 23, 42, 0.75);
   --bg-card-hover: rgba(30, 41, 59, 0.85);
 
-  --primary-gold: #fbbf24;
-  --primary-gold-hover: #f59e0b;
-  --gold-glow: rgba(251, 191, 36, 0.35);
+  --primary-color: #8b5cf6;
+  --primary-color-hover: #7c3aed;
+  --primary-glow: rgba(139, 92, 246, 0.35);
 
   --accent-purple: #8b5cf6;
   --accent-purple-glow: rgba(139, 92, 246, 0.35);
@@ -23,8 +23,8 @@
   --text-muted: #64748b;
 
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-gold: rgba(251, 191, 36, 0.3);
-  --border-hover: rgba(251, 191, 36, 0.6);
+  --border-primary: rgba(139, 92, 246, 0.3);
+  --border-hover: rgba(139, 92, 246, 0.6);
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -98,7 +98,7 @@ img, svg, picture, video {
 .glow-2 {
   bottom: 10%;
   right: 0px;
-  background: radial-gradient(circle, #f59e0b 0%, transparent 70%);
+  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
 }
 
 /* Typography Utilities */
@@ -111,7 +111,7 @@ h1, h2, h3, h4 {
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, #fff 20%, var(--primary-gold) 80%);
+  background: linear-gradient(135deg, #fff 20%, var(--primary-color) 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -189,7 +189,7 @@ h1, h2, h3, h4 {
   height: 44px;
   border-radius: var(--radius-md);
   object-fit: cover;
-  box-shadow: 0 4px 12px var(--gold-glow);
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 .brand-name {
@@ -199,7 +199,7 @@ h1, h2, h3, h4 {
   white-space: nowrap;
 }
 .brand-name span {
-  color: var(--primary-gold);
+  color: var(--primary-color);
 }
 
 .nav-menu {
@@ -219,7 +219,7 @@ h1, h2, h3, h4 {
 }
 
 .nav-link:hover {
-  color: var(--primary-gold);
+  color: var(--primary-color);
 }
 
 .mobile-only-item {
@@ -268,9 +268,9 @@ h1, h2, h3, h4 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-hover) 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
   color: var(--bg-darkest);
-  box-shadow: 0 6px 20px var(--gold-glow);
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .btn-primary:hover {
@@ -336,9 +336,9 @@ h1, h2, h3, h4 {
   gap: 8px;
   padding: 6px 16px;
   background: rgba(251, 191, 36, 0.1);
-  border: 1px solid var(--border-gold);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-full);
-  color: var(--primary-gold);
+  color: var(--primary-color);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 24px;
@@ -454,7 +454,7 @@ h1, h2, h3, h4 {
 }
 .screen-overlay p {
   font-size: 12px;
-  color: var(--primary-gold);
+  color: var(--primary-color);
 }
 
 /* Floating Game Icons */
@@ -466,7 +466,7 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: 10px;
   background: rgba(15, 23, 42, 0.9);
-  border: 1px solid var(--border-gold);
+  border: 1px solid var(--border-primary);
   backdrop-filter: blur(12px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
   z-index: 5;
@@ -530,7 +530,7 @@ h1, h2, h3, h4 {
   font-size: clamp(26px, 4vw, 38px);
   font-weight: 800;
   font-family: var(--font-display);
-  color: var(--primary-gold);
+  color: var(--primary-color);
   margin-bottom: 4px;
 }
 
@@ -550,7 +550,7 @@ h1, h2, h3, h4 {
 }
 
 .section-tag {
-  color: var(--primary-gold);
+  color: var(--primary-color);
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -576,14 +576,17 @@ h1, h2, h3, h4 {
 }
 
 .games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 24px;
   width: 100%;
   box-sizing: border-box;
 }
 
 .game-card {
+  flex: 1 1 270px;
+  max-width: 400px;
   padding: 26px;
   position: relative;
   overflow: hidden;
@@ -668,14 +671,17 @@ h1, h2, h3, h4 {
 }
 
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 24px;
   width: 100%;
   box-sizing: border-box;
 }
 
 .feature-card {
+  flex: 1 1 270px;
+  max-width: 400px;
   padding: 28px;
   width: 100%;
   box-sizing: border-box;
@@ -686,8 +692,8 @@ h1, h2, h3, h4 {
   height: 50px;
   border-radius: var(--radius-md);
   background: rgba(251, 191, 36, 0.1);
-  border: 1px solid var(--border-gold);
-  color: var(--primary-gold);
+  border: 1px solid var(--border-primary);
+  color: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -733,7 +739,7 @@ h1, h2, h3, h4 {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--primary-gold);
+  background: var(--primary-color);
   color: var(--bg-darkest);
   font-weight: 800;
   font-size: 18px;
@@ -741,7 +747,7 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   margin: 0 auto 18px auto;
-  box-shadow: 0 4px 14px var(--gold-glow);
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .step-card h3 {
@@ -782,7 +788,7 @@ h1, h2, h3, h4 {
 }
 
 .faq-item.active {
-  border-color: var(--border-gold);
+  border-color: var(--border-primary);
 }
 
 .faq-question {
@@ -805,7 +811,7 @@ h1, h2, h3, h4 {
 .faq-icon {
   font-size: 20px;
   transition: transform var(--transition-fast);
-  color: var(--primary-gold);
+  color: var(--primary-color);
   flex-shrink: 0;
   margin-left: 12px;
 }
@@ -835,7 +841,7 @@ h1, h2, h3, h4 {
   padding: 48px 32px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, rgba(30, 27, 75, 0.8), rgba(15, 23, 42, 0.95));
-  border: 1px solid var(--border-gold);
+  border: 1px solid var(--border-primary);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -909,7 +915,7 @@ h1, h2, h3, h4 {
   transition: var(--transition-fast);
 }
 .footer-links a:hover {
-  color: var(--primary-gold);
+  color: var(--primary-color);
 }
 
 .footer-bottom {
@@ -1041,9 +1047,9 @@ h1, h2, h3, h4 {
     width: 100%;
     padding: 12px;
     background: rgba(251, 191, 36, 0.1);
-    border: 1px solid var(--border-gold);
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-md);
-    color: var(--primary-gold) !important;
+    color: var(--primary-color) !important;
     font-weight: 700;
     text-decoration: none;
   }
